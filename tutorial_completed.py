@@ -242,9 +242,7 @@ def build_gluing_map(F):
             # get the two endpoints (i,j) of this side, in sorted order
             i = F[f,s]
             j = F[next_side((f,s))]
-            if j < i:
-                i,j = j,i
-            S[f*3+s] = (i,j,f,s)
+            S[f*3+s] = (min(i,j),max(i,j),f,s)
 
     # Sort the list row-wise (so i-j pairs are adjacent)
     S = sort_rows(S)
@@ -252,9 +250,9 @@ def build_gluing_map(F):
     # Build the |F|x3 gluing map G, by linking together pairs of sides with the same vertex indices.
     G = np.empty([n_faces(F),3,2], dtype=np.int64);
     for p in range(0,n_sides,2):
-        [f0,s0] = S[p+0,2:4]
-        [f1,s1] = S[p+1,2:4]
-        glue_together(G, (f0,s0), (f1,s1))
+        fs0 = tuple(S[p+0,2:4])
+        fs1 = tuple(S[p+1,2:4])
+        glue_together(G, fs0, fs1)
 
     # A sanity-check test
     validate_gluing_map(G)
@@ -476,7 +474,7 @@ import potpourri3d as pp3d
 # uncomment these lines to run on the meshes included with the tutorial
 # (note that they additionally set a good source vertex for the later example)
 # (V, F), source_vert = pp3d.read_mesh("example_data/terrain8k.obj"), 1567
-# (V, F), source_vert = pp3d.read_mesh("example_data/pegasus.obj"), 1669
+(V, F), source_vert = pp3d.read_mesh("example_data/pegasus.obj"), 1669
 # (V, F), source_vert = pp3d.read_mesh("example_data/rocketship.ply"), 26403
 
 # use this line to run on your own mesh of interest

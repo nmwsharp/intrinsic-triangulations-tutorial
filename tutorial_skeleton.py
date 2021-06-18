@@ -267,7 +267,7 @@ source_vert = 0
 # Use these lines to load any triangle mesh you would like.
 # .obj, .ply, and .off formats are supported
 # (install with python -m pip install potpourri3d)
-import potpourri3d as pp3d
+# import potpourri3d as pp3d
 
 # uncomment these lines to run on the meshes included with the tutorial
 # (note that they additionally set a good source vertex for the later example)
