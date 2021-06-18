@@ -31,7 +31,7 @@ def n_faces(F):
     :param F: |F|x3 array of face-vertex indices
     :returns: |F|
     """
-    raise ValueError("not yet implemented") 
+    return F.shape[0]
 
 def n_verts(F):
     """
@@ -44,11 +44,11 @@ def n_verts(F):
     :param F: |F|x3 array of face-vertex indices
     :returns: |F|
     """
-    raise ValueError("not yet implemented") 
+    return np.amax(F)+1
 
 
 ##############################################################
-### Simple geometric subroutines
+### Geometric subroutines
 ##############################################################
 
 def face_area(l, f):
@@ -84,7 +84,8 @@ def opposite_corner_angle(l, fs):
 
 def diagonal_length(G, l, fs):
     """
-    Computes the length of the opposite diagonal of the diamond formed by the triangle containing fs, and the neighboring triangle adjacent to fs.
+    Computes the length of the opposite diagonal of the diamond formed by the
+    triangle containing fs, and the neighboring triangle adjacent to fs.
 
     This is the new edge length needed when flipping the edge fs.
 
@@ -117,7 +118,8 @@ def build_edge_lengths(V,F):
     """
     Compute edge lengths for the triangulation.
 
-    Note that we store a length per face-side, which means that each edge length appears twice. This is just to make our code simpler.
+    Note that we store a length per face-side, which means that each edge
+    length appears twice. This is just to make our code simpler.
 
     :param V: |V|x3 array of vertex positions
     :param F: |F|x3 array of face-vertex indices
@@ -133,12 +135,14 @@ def sort_rows(A):
     :param A: A 2D array
     :returns: A sorted array with the same dimensions as A
     """
-    raise ValueError("not yet implemented") 
+    return A[np.lexsort(np.rot90(A))]
 
 
 def glue_together(G, fs1, fs2):
     """
-    Glues together the two specified face sides.  Using this routine (rather than manipulating G directly) just helps to ensure that a basic invariant of G is always preserved: if a is glued to b, then b is glued to a.
+    Glues together the two specified face sides.  Using this routine (rather
+    than manipulating G directly) just helps to ensure that a basic invariant
+    of G is always preserved: if a is glued to b, then b is glued to a.
 
     The gluing map G is updated in-place.
 
@@ -154,7 +158,9 @@ def build_gluing_map(F):
     Builds the gluing map for a triangle mesh.
 
     :param F: |F|x3 vertex-face adjacency list F describing a manifold, oriented triangle mesh without boundary.
-    :returns: |F|x3x2 gluing map G, which for each side of each face stores the face-side it is glued to.  In particular, G[f,s] is a pair (f',s') such that (f,s) and (f',s') are glued together.
+    :returns: |F|x3x2 gluing map G, which for each side of each face stores the
+    face-side it is glued to.  In particular, G[f,s] is a pair (f',s') such
+    that (f,s) and (f',s') are glued together.
     """
     raise ValueError("not yet implemented") 
 
@@ -166,7 +172,18 @@ def validate_gluing_map(G):
 
     :param G: |F|x3x2 gluing map G
     """
-    raise ValueError("not yet implemented") 
+
+    for f in range(n_faces(F)):
+        for s in range(3):
+
+            fs = (f,s)
+            fs_other = other(G, fs)
+
+            if fs == fs_other:
+                raise ValueError("gluing map points face-side to itself {}".format(fs))
+
+            if fs != other(G, fs_other):
+                raise ValueError("gluing map is not involution (applying it twice does not return the original face-side) {} -- {} -- {}".format(fs, fs_other, other(G, fs_other)))
 
 
 
@@ -176,7 +193,7 @@ def validate_gluing_map(G):
 
 def flip_edge(F, G, l, s0):
     """
-    Performs an intrinsic edge flip on the edge given by face-side fs. The
+    Performs an intrinsic edge flip on the edge given by face-side s0. The
     arrays F, G, and l are updated in-place.
 
     This routine _does not_ check if the edge is flippable. Conveniently, in
@@ -186,7 +203,7 @@ def flip_edge(F, G, l, s0):
     :param F: |F|x3 vertex-face adjacency list F
     :param G: |F|x3x2 gluing map G
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :param fs_a: A face-side of the edge that we want to flip
+    :param s0: A face-side of the edge that we want to flip
 
     :returns: The new identity of the side fs_a
     """
@@ -249,7 +266,7 @@ source_vert = 0
 
 # Use these lines to load any triangle mesh you would like.
 # .obj, .ply, and .off formats are supported
-# (install with `python -m pip install potpourri3d)
+# (install with python -m pip install potpourri3d)
 import potpourri3d as pp3d
 
 # uncomment these lines to run on the meshes included with the tutorial
@@ -316,7 +333,8 @@ def build_lumped_mass(F,l):
 
     :param F: |F|x3 vertex-face adjacency list F
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :returns: The mass matrix, as a sparse, |V|x|V| real scipy matrix (which happens to be a diagonal matrix)
+    :returns: The mass matrix, as a sparse, |V|x|V| real scipy matrix (which
+    happens to be a diagonal matrix)
     """
     raise ValueError("not yet implemented") 
 

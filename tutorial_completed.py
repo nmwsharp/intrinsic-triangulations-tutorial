@@ -22,7 +22,7 @@ def other(G, fs):
     :param fs: a face-side (f,s)
     :returns: The neighboring face-side (f_opp,s_opp)
     """
-    return tuple(G[fs[0], fs[1]])
+    return tuple(G[fs])
 
 def n_faces(F):
     """
@@ -48,7 +48,7 @@ def n_verts(F):
 
 
 ##############################################################
-### Simple geometric subroutines
+### Geometric subroutines
 ##############################################################
 
 def face_area(l, f):
@@ -59,6 +59,7 @@ def face_area(l, f):
     :param f: An integer index specifying the face
     :returns: The area of the face.
     """
+    # Gather edge lengths
     l_a = l[f, 0]
     l_b = l[f, 1]
     l_c = l[f, 2]
@@ -90,17 +91,20 @@ def opposite_corner_angle(l, fs):
     :param fs: An face-side (f,s)
     :returns: The corner angle, in radians
     """
+    # Gather edge lengths
     l_a = l[fs]
     l_b = l[next_side(fs)]
     l_c = l[next_side(next_side(fs))]
 
+    # Law of cosines (inverse)
     d = (l_b**2 + l_c**2 - l_a**2) / (2*l_b*l_c);
     return np.arccos(d)
 
 
 def diagonal_length(G, l, fs):
     """
-    Computes the length of the opposite diagonal of the diamond formed by the triangle containing fs, and the neighboring triangle adjacent to fs.
+    Computes the length of the opposite diagonal of the diamond formed by the
+    triangle containing fs, and the neighboring triangle adjacent to fs.
 
     This is the new edge length needed when flipping the edge fs.
 
@@ -109,14 +113,14 @@ def diagonal_length(G, l, fs):
     :param fs: A face-side (f,s)
     :returns: The diagonal length
     """
-
+    # Gather lengths and angles
     fs_opp = other(G, fs)
-
     u = l[next_side(next_side(fs))]
     v = l[next_side(fs_opp)]
     theta_A = opposite_corner_angle(l, next_side(fs))
     theta_B = opposite_corner_angle(l, next_side(next_side((fs_opp))))
 
+    # Law of cosines
     d = u**2 + v**2 - 2 * u * v * np.cos(theta_A + theta_B)
     return np.sqrt(d)
 
@@ -136,11 +140,11 @@ def is_delaunay(G, l, fs):
     theta_A = opposite_corner_angle(l, fs)
     theta_B = opposite_corner_angle(l, fs_opp)
 
-    # Test against PI - eps to conservatively pass in cases where theta_A + theta_B \approx PI. This ensures
-    # the algorithm terminates even in the case of a co-circular diamond, in the presence of floating-point
-    # errors.
+    # Test against PI - eps to conservatively pass in cases where theta_A
+    # + theta_B \approx PI. This ensures the algorithm terminates even in the
+    # case of a co-circular diamond, in the presence of floating-point errors.
     EPS = 1e-5
-    return theta_A + theta_B < np.pi + EPS
+    return theta_A + theta_B <= np.pi + EPS
 
 
 ##############################################################
@@ -152,7 +156,8 @@ def build_edge_lengths(V,F):
     """
     Compute edge lengths for the triangulation.
 
-    Note that we store a length per face-side, which means that each edge length appears twice. This is just to make our code simpler.
+    Note that we store a length per face-side, which means that each edge
+    length appears twice. This is just to make our code simpler.
 
     :param V: |V|x3 array of vertex positions
     :param F: |F|x3 array of face-vertex indices
@@ -163,7 +168,7 @@ def build_edge_lengths(V,F):
     l = np.empty((n_faces(F),3))
 
     for f in range(n_faces(F)):    # iterate over triangles
-        for s in range(3):      # iterate over the three sides
+        for s in range(3):         # iterate over the three sides
 
             # get the two endpoints (i,j) of this side
             i = F[f,s]
@@ -179,7 +184,8 @@ def build_edge_lengths(V,F):
 
 def sort_rows(A):
     """
-    Sorts rows lexicographically, i.e., comparing the first column first, then using subsequent columns to break ties.
+    Sorts rows lexicographically, i.e., comparing the first column first, then
+    using subsequent columns to break ties.
 
     :param A: A 2D array
     :returns: A sorted array with the same dimensions as A
@@ -189,7 +195,9 @@ def sort_rows(A):
 
 def glue_together(G, fs1, fs2):
     """
-    Glues together the two specified face sides.  Using this routine (rather than manipulating G directly) just helps to ensure that a basic invariant of G is always preserved: if a is glued to b, then b is glued to a.
+    Glues together the two specified face sides.  Using this routine (rather
+    than manipulating G directly) just helps to ensure that a basic invariant
+    of G is always preserved: if a is glued to b, then b is glued to a.
 
     The gluing map G is updated in-place.
 
@@ -206,7 +214,9 @@ def build_gluing_map(F):
     Builds the gluing map for a triangle mesh.
 
     :param F: |F|x3 vertex-face adjacency list F describing a manifold, oriented triangle mesh without boundary.
-    :returns: |F|x3x2 gluing map G, which for each side of each face stores the face-side it is glued to.  In particular, G[f,s] is a pair (f',s') such that (f,s) and (f',s') are glued together.
+    :returns: |F|x3x2 gluing map G, which for each side of each face stores the
+    face-side it is glued to.  In particular, G[f,s] is a pair (f',s') such
+    that (f,s) and (f',s') are glued together.
     """
     
     # In order to construct this array, for each side of a triangle, we need to
@@ -220,12 +230,14 @@ def build_gluing_map(F):
     # with adjacent face-side entries.
 
 
-    # Build a temporary list S of all face-sides, given by tuples (i,j,f,s), where (i,j) are the vertex indices of side s of face f in sorted order (i<j).
+    # Build a temporary list S of all face-sides, given by tuples (i,j,f,s),
+    # where (i,j) are the vertex indices of side s of face f in sorted order
+    # (i<j).
     n_sides = 3*n_faces(F)
     S = np.empty([n_sides,4], dtype=np.int64)
 
     for f in range(n_faces(F)):    # iterate over triangles
-        for s in range(3):      # iterate over the three sides
+        for s in range(3):         # iterate over the three sides
 
             # get the two endpoints (i,j) of this side, in sorted order
             i = F[f,s]
@@ -234,7 +246,7 @@ def build_gluing_map(F):
                 i,j = j,i
             S[f*3+s] = (i,j,f,s)
 
-    # Sort the list according to the endpoints.
+    # Sort the list row-wise (so i-j pairs are adjacent)
     S = sort_rows(S)
 
     # Build the |F|x3 gluing map G, by linking together pairs of sides with the same vertex indices.
@@ -278,7 +290,7 @@ def validate_gluing_map(G):
 
 def flip_edge(F, G, l, s0):
     """
-    Performs an intrinsic edge flip on the edge given by face-side fs. The
+    Performs an intrinsic edge flip on the edge given by face-side s0. The
     arrays F, G, and l are updated in-place.
 
     This routine _does not_ check if the edge is flippable. Conveniently, in
@@ -288,7 +300,7 @@ def flip_edge(F, G, l, s0):
     :param F: |F|x3 vertex-face adjacency list F
     :param G: |F|x3x2 gluing map G
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :param fs_a: A face-side of the edge that we want to flip
+    :param s0: A face-side of the edge that we want to flip
 
     :returns: The new identity of the side fs_a
     """
@@ -355,7 +367,7 @@ def flip_to_delaunay(F, G, l):
     Flip edges in the triangulation until it satisifes the intrinsic Delaunay criterion.
 
     For simplicity, we will implement this algorithm in terms of face-sides, checking if
-    each face-side satisifes the criterion. Technically, this means we are testing each
+    each face-side satisfies the criterion. Technically, this means we are testing each
     edge twice, which is unecessary, but makes our implementation simpler.
 
     The arrays F,G,l are modified in-place.
@@ -372,7 +384,7 @@ def flip_to_delaunay(F, G, l):
     # A queue of face-sides to test for the Delaunay criterion
     to_process = deque()
 
-    # NOTE: there some sublty as to why this implementation is correct.
+    # NOTE: there some subtlety as to why this implementation is correct.
     # Whenever we flip an edge, the face-sides of the two triangles involved in
     # the flip get re-labelled. This means that the face-side entries in
     # to_process will become stale, and potentially point to a different
@@ -383,7 +395,7 @@ def flip_to_delaunay(F, G, l):
     # NOTE: This implementation may add many repeated entries of the same
     # face-side in to the queue, which is wasteful. For performance, another
     # array can be added to keep track of which edges are already in the queue,
-    # and avoid addiing them multiple times.
+    # and avoid adding them multiple times.
 
     # Initially add all face-sides for processing
     for f in range(n_faces(F)):    # iterate over triangles
@@ -397,11 +409,12 @@ def flip_to_delaunay(F, G, l):
         # Get the next face-side in the queue
         fs = to_process.pop()
 
-        # Check if it satisifies the Delaunay criterion
+        # Check if it satisfies the Delaunay criterion
         if not is_delaunay(G, l, fs):
 
             # Flip the edge
-            # Note that we need to update the current face-side fs, because it is re-labelled during the flip.
+            # Note that we need to update the current face-side fs, 
+            # because it is re-labelled during the flip.
             fs = flip_edge(F, G, l, fs)
             n_flips += 1
 
@@ -457,7 +470,7 @@ source_vert = 0
 
 # Use these lines to load any triangle mesh you would like.
 # .obj, .ply, and .off formats are supported
-# (install with `python -m pip install potpourri3d)
+# (install with python -m pip install potpourri3d)
 import potpourri3d as pp3d
 
 # uncomment these lines to run on the meshes included with the tutorial
@@ -544,7 +557,8 @@ def build_lumped_mass(F,l):
 
     :param F: |F|x3 vertex-face adjacency list F
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :returns: The mass matrix, as a sparse, |V|x|V| real scipy matrix (which happens to be a diagonal matrix)
+    :returns: The mass matrix, as a sparse, |V|x|V| real scipy matrix (which
+    happens to be a diagonal matrix)
     """
 
     # Initialize empty sparse matrix
