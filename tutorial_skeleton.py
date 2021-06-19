@@ -271,7 +271,7 @@ source_vert = 0
 
 # uncomment these lines to run on the meshes included with the tutorial
 # (note that they additionally set a good source vertex for the later example)
-# (V, F), source_vert = pp3d.read_mesh("example_data/terrain8k.obj"), 1567
+# (V, F), source_vert = pp3d.read_mesh("example_data/terrain8k.obj"), 2894
 # (V, F), source_vert = pp3d.read_mesh("example_data/pegasus.obj"), 1669
 # (V, F), source_vert = pp3d.read_mesh("example_data/rocketship.ply"), 26403
 
