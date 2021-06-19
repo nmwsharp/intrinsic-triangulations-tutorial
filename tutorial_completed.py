@@ -250,6 +250,12 @@ def build_gluing_map(F):
     # Build the |F|x3 gluing map G, by linking together pairs of sides with the same vertex indices.
     G = np.empty([n_faces(F),3,2], dtype=np.int64);
     for p in range(0,n_sides,2):
+        
+        # extra sanity check to fail nicely if a mesh with boundary 
+        # or nonmanifold mesh is given as input
+        if S[p+0,0] != S[p+1,0] or S[p+0,1] != S[p+1,1]:
+            raise ValueError("Problem building glue map. Is input closed & manifold?")
+
         fs0 = tuple(S[p+0,2:4])
         fs1 = tuple(S[p+1,2:4])
         glue_together(G, fs0, fs1)
@@ -316,14 +322,14 @@ def flip_edge(F, G, l, s0):
     # Get vertex indices for the vertices of the diamond
     v0, v1, v2, v3 = F[s0], F[s2], F[s3], F[s5]
 
+    # Get the two faces from our face-sides
+    f0, f1 = s0[0], s1[0]
+
     # Get the original lengths of the outside edges of the diamond
     l2, l3, l4, l5 = l[s2], l[s3], l[s4], l[s5]
     
     # Compute the length of the new edge
     new_length = diagonal_length(G, l, s0)
-
-    # Get the two faces from our face-sides
-    f0, f1 = s0[0], s1[0]
     
     # Update the adjacency list F
     F[f0] = (v3, v2, v0)
@@ -473,8 +479,8 @@ import potpourri3d as pp3d
 
 # uncomment these lines to run on the meshes included with the tutorial
 # (note that they additionally set a good source vertex for the later example)
-# (V, F), source_vert = pp3d.read_mesh("example_data/terrain8k.obj"), 1567
-(V, F), source_vert = pp3d.read_mesh("example_data/pegasus.obj"), 1669
+# (V, F), source_vert = pp3d.read_mesh("example_data/terrain8k.obj"), 2894
+# (V, F), source_vert = pp3d.read_mesh("example_data/pegasus.obj"), 1669
 # (V, F), source_vert = pp3d.read_mesh("example_data/rocketship.ply"), 26403
 
 # use this line to run on your own mesh of interest
