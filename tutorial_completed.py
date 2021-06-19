@@ -338,7 +338,7 @@ def flip_edge(F, G, l, s0):
     # Re-label elements.
     # Usually this does nothing, but in a Delta-complex one of the neighbors of
     # these faces might be one of the faces themselves! In that case, this
-    # re-labels the neighbors according to the upated labels after the edge flip.
+    # re-labels the neighbors according to the updated labels after the edge flip.
     def relabel(s):
         # NOTE: these variables (s2, f0, etc) are automatically accessed from the outer scope
         # in Python; in other languages we could add them as additional arguments.
