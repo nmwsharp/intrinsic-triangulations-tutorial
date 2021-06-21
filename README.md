@@ -1,9 +1,15 @@
 # intrinsic-triangulations-tutorial
 
-We provide an implementation of *intrinsic triangulations* from scratch in python, alongside Lawson's algorithm for flipping to an (intrinsic) Delaunay triangulation.
+We provide an implementation of *intrinsic triangulations* from scratch in Python 3, alongside Lawson's algorithm for flipping to an (intrinsic) Delaunay triangulation.
 Using these intrinsic triangulations, we compute geodesic distance via the the [heat method](http://www.cs.cmu.edu/~kmcrane/Projects/HeatMethod/paper.pdf).
 
 ![Screenshot](http://www.cs.cmu.edu/~mgillesp/IntTriCourse/img_small/ScreenshotDropshadow.png)
+
+Install dependencies:
+```
+python -m pip install numpy scipy polyscope potpourri3d  
+```
+(`python` might be `python3`, depending on your environment)
 
 Like most PDE-based methods, the heat method may yield inaccurate solutions on low-quality inputs. Running it on a mesh's intrinsic Delaunay triangulation yields dramatically more accurate solutions.
 | Mesh        | Distance on Original Mesh           | Distance on Intrinsic Delaunay Triangulation  |
