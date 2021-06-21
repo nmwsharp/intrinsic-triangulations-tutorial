@@ -553,7 +553,7 @@ def build_cotan_laplacian(F,l):
             L[i,i] += cotan_weight
             L[j,j] += cotan_weight
 
-    return L.tocsr() # convert to a column-compressed sparse matrix
+    return L.tocsr() # convert to a compressed sparse row matrix
 
 def build_lumped_mass(F,l):
     """
@@ -576,7 +576,7 @@ def build_lumped_mass(F,l):
             i = F[f,s]
             M[i,i] += area / 3.
 
-    return M.tocsr() # convert to a column-compressed sparse matrix
+    return M.tocsr() # convert to a compressed sparse row matrix
 
 
 def edge_in_face_basis(l, fs):
