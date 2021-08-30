@@ -371,7 +371,7 @@ def evaluate_divergence_at_vertices(F,l,v):
 
     :param F: |F|x3 vertex-face adjacency list F
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :param v: |F|x3 edge-lengths array, giving the length of each face-side
+    :param v: A vector function as a |F|x3 numpy array, holding one vector per face
     :returns: The divergences as a length-|V| numpy array
     """
     raise ValueError("not yet implemented") 
