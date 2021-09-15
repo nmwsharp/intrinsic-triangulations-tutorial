@@ -615,7 +615,7 @@ def evaluate_gradient_at_faces(F,l,x):
     :param F: |F|x3 vertex-face adjacency list F
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
     :param x: A scalar function as a length-|V| numpy array, holding one value per vertex
-    :returns: |F|x2 array of gradient vectors per-face
+    :returns: |F|x2 array of gradient vectors per-face (defined in the local 2D basis for each face)
     """
 
     grads = np.empty((n_faces(F),2))
@@ -646,7 +646,7 @@ def evaluate_divergence_at_vertices(F,l,v):
 
     :param F: |F|x3 vertex-face adjacency list F
     :param l: |F|x3 edge-lengths array, giving the length of each face-side
-    :param v: |F|x3 edge-lengths array, giving the length of each face-side
+    :param v: |F|x2 array of vectors per-face (defined in the local 2D basis for each face)
     :returns: The divergences as a length-|V| numpy array
     """
 
