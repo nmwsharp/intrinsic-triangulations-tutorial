@@ -274,7 +274,7 @@ def validate_gluing_map(G):
     :param G: |F|x3x2 gluing map G
     """
 
-    for f in range(n_faces(F)):
+    for f in range(n_faces(G)):
         for s in range(3):
 
             fs = (f,s)
