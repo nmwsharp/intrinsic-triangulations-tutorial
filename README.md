@@ -7,7 +7,7 @@ This course gives an overview of intrinsic triangulations and their use in geome
 This course was presented at SIGGRAPH 2021 and IMR 2021.
 
 - **Course Notes**: [(pdf link)](https://nmwsharp.com/media/papers/int-tri-course/int_tri_course.pdf)
-- **Course Video**: _coming soon_
+- **Course Video**: [(youtube link)](https://www.youtube.com/watch?v=gcRDdYrgOhg)
 - **Authors**: [Nicholas Sharp](https://nmwsharp.com/), [Mark Gillespie](https://markjgillespie.com/), [Keenan Crane](http://keenan.is/here)
 
 
